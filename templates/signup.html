@@ -470,7 +470,35 @@ h1 {
       </svg>
     </div>
 
-    <form onSubmit="return false;" method="POST" class="form login">
+    <form  method="POST" class="form login">
+      {% csrf_token %}
+       <div class="form__field form__field--email">
+        <label class="label label--icon" for="login__email">
+          <svg class="icon">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#user"></use>
+          </svg>
+          <span class="hidden">Email</span>
+        </label>
+        <div class="form__input-wrapper">
+          <input id="login__email" type="text" name="username" class="form__input" placeholder="Username" required>
+          <!--
+              FF is ignoring position relative of form__input-wrapper so added a wrapper for .underline.
+              NOTE: just the precense of this comment fixes this FF issue (making the underline-wrapper unncessary).
+              But I'd rather not rely on a comment.
+            -->
+          <div class="underline-wrapper">
+            <span class="underline"></span>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+
+
+
       <div class="form__field form__field--email">
         <label class="label label--icon" for="login__email">
           <svg class="icon">
@@ -519,7 +547,7 @@ h1 {
           <span class="hidden">Password</span>
         </label>
         <div class="form__input-wrapper">
-          <input  type="password" name="password" class="form__input" placeholder="Confirm Password" required>
+          <input  type="password" name="confirm_password" class="form__input" placeholder="Confirm Password" required>
           <!--
               FF is ignoring position relative of form__input-wrapper so added a wrapper for .underline.
               NOTE: just the precense of this comment fixes this FF issue (making the underline-wrapper unncessary).
