@@ -778,12 +778,18 @@ nav .menu .menu_icon:hover .icon:after {
                           </div>
                         </div>
 
-
-            <p class="website_name">CSSM</p>
+            {% if user.is_authenticated %}
+            <p class="website_name">{{user.get_username}}</p>
+            {% endif %}
             <div class="menu_links">
-                <a href="" class="link">about</a>
-                <a href="" class="link">projects</a>
-                <a href="" class="link">contacts</a>
+                <a href="" class="link">cloud</a>
+                <a href="" class="link">upload file</a>
+                <a href="" class="link">myfiles</a>
+                <a href="" class="link">requests</a>
+                <a href="" class="link">received files</a>
+                <a href="{% url 'logout' %}" class="link">logout</a>
+
+
             </div>
             <div class="menu_icon">
                 <span class="icon"></span>
