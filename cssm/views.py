@@ -126,28 +126,47 @@ def cloud(request):
 
     #print(dc)
     #print(data)
-    username=request.user.get_username
+    username=request.user.get_username()
     context = {
         'data': data,
         'table_name': 'CLOUD',
         'current_user': username,
     }
 
+    cursor.execute(f"select UserID from users where username='{request.user.get_username()}'")
+    userid=cursor.fetchall()[0][0]
+
     cursor.execute(f"select received_files from received where username='{request.user.get_username()}'")
     print(cursor.fetchall())
+
+
+
     if cursor.fetchall() != []:
         files_received=cursor.fetchall()
         files_received=files_received[0][0].split(',')
+
+
         f_r=[]
         for i in files_received:
             f_r.append(int(i))
         print(f_r)
         context['files_received']=f_r
 
+    cursor.execute(f"select * from cloud where owner='{userid}'")
+    owned=cursor.fetchall()
+    owned_files=[]
+    if owned!=[]:
+        print(owned)
+        for i in range(len(owned)):
+            owned_files.append(owned[i][0])
+    print(owned_files)
+    context['owned_files']=owned_files
+
 
 
     requested_file=request.POST.get('collect','')
     print(requested_file)
+
 
 
     if requested_file:
@@ -299,7 +318,8 @@ def received_files(request):
         'table_name': 'RECEIVED FILES'
     }
     template = loader.get_template('table.html')
-    username=request.user.get_username()
+    username=request.user.username
+    print(username)
 
     cursor.execute(f"select * from received where username='{username}'")
 

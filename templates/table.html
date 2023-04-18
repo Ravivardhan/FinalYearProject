@@ -422,7 +422,7 @@ body{
 
 <section>
   <!--for demo wrap-->
-  <h1>{{current_user}}</h1>
+  <h1>{{table_name}}</h1>
   <div class="tbl-header">
     <table cellpadding="0" cellspacing="0" border="0">
       <thead>
@@ -465,6 +465,7 @@ body{
             {% if table_name == "CLOUD" %}
         {% if not value.owner == current_user.0.0 %}
         {% if  not value.file_id in files_received %}
+        {% if not value.file_id in owned_files %}
 
 
         <td>
@@ -482,6 +483,8 @@ body{
     </div>
     send request
 </button>
+                                            {% endif %}
+
                                 {% endif %}
 
                         {% endif %}
