@@ -827,8 +827,8 @@ nav .menu .menu_icon:hover .icon:after {
                 <a href="{% url 'cloud' %}" class="link">cloud</a>
                 <a href="{% url 'upload' %}" class="link">upload file</a>
                 <a href="{% url 'myfiles' %}" class="link">myfiles</a>
-                <a href="{% url 'cloud' %}" class="link">requests
-                    {% if requests != None %}
+                <a href="{% url 'requests' %}" class="link">requests
+                    {% if requests != 0 %}
                     <span class="icon-button__badge">{{  requests }}</span>
                 {% endif %}
                 </a>

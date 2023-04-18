@@ -13,4 +13,5 @@ urlpatterns = [
     path('homepage/',views.homepage,name='homepage'),
     path('homepage/myfiles',views.myfiles,name='myfiles'),
     path('homepage/receivedfiles', views.received_files, name='receivedfiles'),
+    path('homepage/requests',views.requests,name='requests'),
 ]

@@ -261,7 +261,7 @@ body{
   --progress-success: #5C86FF;
   --tick-stroke: var(--progress-active);
   --shadow: rgba(0, 9, 61, 0.2);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   line-height: 19px;
   min-width: 117px;
@@ -401,11 +401,6 @@ body{
 
 
 </style>
-
-
-
-
-
 <form action="{% url 'homepage' %}" method="post">
 {% csrf_token %}
 
@@ -422,53 +417,35 @@ body{
 
 <section>
   <!--for demo wrap-->
-  <h1>{{current_user}}</h1>
+  <h1>{{table_name}}</h1>
   <div class="tbl-header">
     <table cellpadding="0" cellspacing="0" border="0">
       <thead>
         <tr>
+          <th>File ID</th>
           <th>File Name</th>
-          <th>File Type</th>
-          <th>Description</th>
-          <th>Owned by</th>
-          <th>Uploaded</th>
-            {% if table_name == "CLOUD" %}
-
+          <th>Requested By</th>
+          <th>Request time</th>
             <th>request</th>
-
-            {% endif %}
-
-
         </tr>
-
-
       </thead>
     </table>
   </div>
   <div class="tbl-content">
     <table cellpadding="0" cellspacing="0" border="0">
       <tbody>
-
-
-
-
 {% for key,value in data.items %}
-<form method="POST"  id="id">
+<form method="POST" id="id">
     {% csrf_token %}
 
     <tr>
-          <td>{{ value.file_name }}</td>
-        <td>video</td>
-          <td>{{ value.file_description}}</td>
-          <td>{{ value.owner }}</td>
-          <td>{{value.upload_time}}</td>
-            {% if table_name == "CLOUD" %}
-        {% if not value.owner == current_user.0.0 %}
-        {% if  not value.file_id in files_received %}
-
+          <td>{{ value.file_id }}</td>
+        <td>{{ value.file_name }}</td>
+          <td>{{ value.requested_by}}</td>
+          <td>{{ value.request_time }}</td>
 
         <td>
-            <button class="button-hold" name="collect" type="submit" value="{{ value.file_name }}-{{ value.file_description }}-{{ value.owner }}-{{ value.upload_time }}">
+            <button class="button-hold" name="collect" type="submit" value="{{ value.file_id }}-{{ value.file_name }}-{{ value.requested_by }}-{{ value.request_time }}">
     <div>
         <svg class="icon" viewBox="0 0 16 16">
             <polygon points="1.3,6.7 2.7,8.1 7,3.8 7,16 9,16 9,3.8 13.3,8.1 14.7,6.7 8,0"></polygon>
@@ -480,19 +457,10 @@ body{
             <polyline points="18,7 11,16 6,12" />
         </svg>
     </div>
-    send request
+    Accept Request
 </button>
-                                {% endif %}
-
-                        {% endif %}
-
 
         </td>
-        {% endif %}
-
-
-
-
         </tr>
 
     </form>
@@ -554,7 +522,18 @@ document.querySelectorAll('.button-hold').forEach(button => {
     });
     ['mouseup', 'mouseout', 'touchend', 'keyup'].forEach(e => {
         button.addEventListener(e, ev => {
-            if(e != 'keyup' || (e == 'keyup' && ev.which == 32)) {
+            if(e <!doctype html>
+            <html lang="en">
+            <head>
+            <meta charset="UTF-8">
+                         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+                                     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+                         <title>Document</title>
+            </head>
+            <body>
+
+            </body>
+            </html>= 'keyup' || (e == 'keyup' && ev.which == 32)) {
                 button.classList.remove('process');
                 clearTimeout(button.timeout);
             }

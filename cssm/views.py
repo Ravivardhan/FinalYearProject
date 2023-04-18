@@ -66,7 +66,11 @@ def signup(request):
 def homepage(request):
     if not request.user.is_authenticated:
         return redirect("login")
-    requests={'requests':1}
+    username=request.user.get_username()
+    cursor.execute(f"select * from requests where username='{username}'")
+    requests=cursor.fetchall()
+    print(len(requests))
+    requests={'requests':len(requests)}
     return render(request,'homepage.html',context=requests)
 
 def Logout(request):
@@ -108,6 +112,7 @@ def cloud(request):
         dc['file_name']=i[1]
         dc['file_description']=i[2]
         dc['upload_time']=i[3]
+        dc['file_id']=i[0]
 
 
         dc['owner']=username[0][0]
@@ -121,18 +126,131 @@ def cloud(request):
 
     #print(dc)
     #print(data)
+    username=request.user.get_username
+    context = {
+        'data': data,
+        'table_name': 'CLOUD',
+        'current_user': username,
+    }
 
+    cursor.execute(f"select received_files from received where username='{request.user.get_username()}'")
+    print(cursor.fetchall())
+    if cursor.fetchall() != []:
+        files_received=cursor.fetchall()
+        files_received=files_received[0][0].split(',')
+        f_r=[]
+        for i in files_received:
+            f_r.append(int(i))
+        print(f_r)
+        context['files_received']=f_r
+
+
+
+    requested_file=request.POST.get('collect','')
+    print(requested_file)
+
+
+    if requested_file:
+        requested_file=requested_file.split('-')
+        requested_file_name=requested_file[0]
+        requested_file_description=requested_file[1]
+        requested_file_owner=requested_file[2]
+        print(requested_file_name)
+
+        cursor.execute(f"select file_id from cloud where file_name='{requested_file_name}'")
+
+
+        file_id=cursor.fetchall()[0][0]
+        print(file_id)
+
+        username = request.user.get_username()
+
+
+
+        cursor.execute(f"insert into requests(username,requested_by,file_id) values('{requested_file_owner}','{username}','{file_id}')")
+        mydb.commit()
+        print("request sent successfully")
+
+    return HttpResponse(template.render(context,request))
+def requests(request):
+    template = loader.get_template('requests.html')
+    username=request.user.get_username()
+
+    cursor.execute(f"select * from requests where username='{username}'")
+    files = cursor.fetchall()
+    data = {}
+    dc = {}
+    # print(files)
+    for i in files:
+        # print(i)
+
+        cursor.execute(f"select file_name from cloud where file_id='{i[2]}'")
+        file_name=cursor.fetchall()[0][0]
+
+        dc['file_name']=file_name
+        dc['file_id'] = i[2]
+        dc['requested_by'] = i[1]
+        dc['request_time'] = i[3]
+
+        # print(i[0])
+        # print(dc)
+        data[i[4]] = dc
+        dc = {}
+
+        # print("\n")
+        # print(data)
+
+    # print(dc)
+    # print(data)
 
     context = {
         'data': data,
         'table_name': 'CLOUD'
     }
 
+    requested_file = request.POST.get('collect', '')
+    print(requested_file)
+
+    if requested_file:
+        requested_file = requested_file.split('-')
+        print(requested_file)
+
+        request_file_id=requested_file[0]
+        request_file_name=requested_file[1]
+        requested_by=requested_file[2]
+        request_time=requested_file[3]
+
+        #print(request_file_id,request_file_name,requested_by,request_time)
+        username=request.user.get_username()
+        cursor.execute(f"select received_files from received where username='{requested_by}'")
+        receivd_files=cursor.fetchall()
+        print(receivd_files)
+        if receivd_files != []:
+            received_files_str=str(receivd_files[0][0])+','+str(request_file_id)
+            print(received_files_str)
+            cursor.execute(f"update received set received_files='{received_files_str}' where username='{requested_by}'")
+            mydb.commit()
+
+            #cursor.execute(f"select file_id from cloud where file_name='{requested_file_name}'")
+            #file_id = cursor.fetchall()[0][0]
+            #username = request.user.get_username()
+
+            #cursor.execute(f"insert into requests(username,requested_by,file_id) values('{requested_file_owner}','{username}','{file_id}')")
+            #mydb.commit()
+            #print("request sent successfully")
 
 
+        else:
+            print(request_file_id)
 
+            username=request.user.get_username()
 
-    return HttpResponse(template.render(context,request))
+            cursor.execute(f"update received set received_files='{request_file_id}' where username='{requested_by}'")
+            mydb.commit()
+            print("first received file")
+        cursor.execute(f"delete from requests where username='{username}' and file_id='{request_file_id}' and requested_by='{requested_by}'")
+        mydb.commit()
+    return HttpResponse(template.render(context, request))
 
 def myfiles(request):
     template = loader.get_template('table.html')
@@ -177,6 +295,9 @@ def myfiles(request):
 
 
 def received_files(request):
+    context = {
+        'table_name': 'RECEIVED FILES'
+    }
     template = loader.get_template('table.html')
     username=request.user.get_username()
 
@@ -185,46 +306,52 @@ def received_files(request):
     files_received=cursor.fetchall()
 
     #print(files_received[0][1])
-    received_list=files_received[0][1].split(',')
-    list_received=[]
-    for i in received_list:
-        list_received.append(int(i))
+    print(files_received)
+    if files_received !=[]:
+        if files_received[0][1]==None:
+            received_list=''
+            list_received=[]
+        else:
+            received_list = files_received[0][1].split(',')
+            list_received = []
+            for i in received_list:
+                list_received.append(int(i))
 
-    #print(list_received)
-    files=[]
-    for i in list_received:
-        cursor.execute(f"select * from cloud where file_id='{i}'")
-        file=cursor.fetchall()
-        files.append(file[0])
 
-    print(files)
-    data = {}
-    dc = {}
-    # print(files)
-    for i in files:
-        # print(i)
-        cursor.execute(f"select username from users where UserID={i[4]}")
-        username = cursor.fetchall()
 
-        dc['file_name'] = i[1]
-        dc['file_description'] = i[2]
-        dc['upload_time'] = i[3]
+        #print(list_received)
+        files=[]
+        for i in list_received:
+            cursor.execute(f"select * from cloud where file_id='{i}'")
+            file=cursor.fetchall()
+            files.append(file[0])
 
-        dc['owner'] = username[0][0]
-        # print(i[0])
-        # print(dc)
-        data[i[0]] = dc
+        print(files)
+        data = {}
         dc = {}
+        # print(files)
+        for i in files:
+            # print(i)
+            cursor.execute(f"select username from users where UserID={i[4]}")
+            username = cursor.fetchall()
+
+            dc['file_name'] = i[1]
+            dc['file_description'] = i[2]
+            dc['upload_time'] = i[3]
+
+            dc['owner'] = username[0][0]
+            # print(i[0])
+            # print(dc)
+            data[i[0]] = dc
+            dc = {}
 
         # print(data)
+        context['data']=data
 
     # print(dc)
     # print(data)
 
-    context = {
-        'data': data,
-        'table_name':'RECEIVED FILES'
-    }
+
 
 
     return HttpResponse(template.render(context, request))
