@@ -432,9 +432,15 @@ body{
           <th>Description</th>
           <th>Owned by</th>
           <th>Uploaded</th>
+
             {% if table_name == "CLOUD" %}
 
             <th>request</th>
+
+            {% endif %}
+            {% if table_name == "MY FILES" %}
+
+            <th>view</th>
 
             {% endif %}
 
@@ -458,10 +464,11 @@ body{
 
     <tr>
           <td>{{ value.file_name }}</td>
-        <td>video</td>
+        <td>{{ value.file_type }}</td>
           <td>{{ value.file_description}}</td>
           <td>{{ value.owner }}</td>
           <td>{{value.upload_time}}</td>
+
             {% if table_name == "CLOUD" %}
         {% if not value.owner == current_user.0.0 %}
         {% if  not value.file_id in files_received %}
@@ -488,6 +495,61 @@ body{
                                 {% endif %}
 
                         {% endif %}
+
+
+        </td>
+        {% endif %}
+
+
+        <!--- my files  --->
+
+
+
+         {% if table_name == "MY FILES" %}
+
+
+
+        <td>
+            <button class="button-hold" name="collect" type="submit" value="{{ value.file_name }}-{{ value.file_type }}-{{ value.file_description }}-{{ value.owner }}-{{ value.upload_time }}-{{ value.file_id }}">
+    <div>
+        <svg class="icon" viewBox="0 0 16 16">
+            <polygon points="1.3,6.7 2.7,8.1 7,3.8 7,16 9,16 9,3.8 13.3,8.1 14.7,6.7 8,0"></polygon>
+        </svg>
+        <svg class="progress" viewBox="0 0 32 32">
+            <circle r="8" cx="16" cy="16" />
+        </svg>
+        <svg class="tick" viewBox="0 0 24 24">
+            <polyline points="18,7 11,16 6,12" />
+        </svg>
+    </div>
+    view file
+</button>
+
+
+        </td>
+        {% endif %}
+
+
+
+         {% if table_name == "RECEIVED FILES" %}
+
+
+
+        <td>
+            <button class="button-hold" name="collect" type="submit" value="{{ value.file_name }}-{{ value.file_type }}-{{ value.file_description }}-{{ value.owner }}-{{ value.upload_time }}-{{ value.file_id }}">
+    <div>
+        <svg class="icon" viewBox="0 0 16 16">
+            <polygon points="1.3,6.7 2.7,8.1 7,3.8 7,16 9,16 9,3.8 13.3,8.1 14.7,6.7 8,0"></polygon>
+        </svg>
+        <svg class="progress" viewBox="0 0 32 32">
+            <circle r="8" cx="16" cy="16" />
+        </svg>
+        <svg class="tick" viewBox="0 0 24 24">
+            <polyline points="18,7 11,16 6,12" />
+        </svg>
+    </div>
+    view file
+</button>
 
 
         </td>

@@ -79,7 +79,10 @@ def homepage(request):
 def Logout(request):
     logout(request)
     return redirect('login')
-
+import mysql.connector
+import base64
+from PIL import Image
+import io
 def upload(request):
     if request.method=="POST":
         file_name=request.POST.get('file_name')
@@ -92,24 +95,36 @@ def upload(request):
         cursor.execute(f"select UserID from users where username='{username}'")
         current_user=cursor.fetchall()
         print(current_user[0][0])
-        #cursor.execute(f"insert into cloud(file_name,file_description,owner,file_key,status) values('{file_name}','{file_description}','{current_user[0][0]}','{file_key}',0)")
-        #mydb.commit()
-
-        #       FILE UPLOADING FUNCTIONS
-        file=request.FILES.get('file_document')
-        uploaded_file=file
+        file = request.FILES.get('file_document')
+        uploaded_file = file
         fs = FileSystemStorage()
         name = fs.save(uploaded_file.name, uploaded_file)
         print(fs.url(name))
+        type=fs.url(name).split('.')
+        type=type[1]
+        print(type)
+        cursor.execute(f"insert into cloud(file_name,type,file_description,owner,file_key,status) values('{file_name}','{type}','{file_description}','{current_user[0][0]}','{file_key}',0)")
+        mydb.commit()
+
+        #       FILE UPLOADING FUNCTIONS
+
         with default_storage.open(uploaded_file.name) as file:
             binaryData = file.read()
             #print(binaryData)
 
-            print(file)
+            #print(file)
+            cursor.execute(f"select file_id from cloud where file_name='{file_name}'")
+            file_id=cursor.fetchall()[0][0]
 
-            cursor.execute(f"insert into encrypted(file_id,file) values(3,LOAD_FILE('{file}'))")
+            query="insert into encrypted_files(file_id,file_content) values(%s,%s)"
+            values=(file_id,binaryData)
+            cursor.execute(query,values)
             mydb.commit()
             print("inserted successfully")
+
+
+
+
 
     return render(request,'upload.html')
 def verification(request):
@@ -129,11 +144,13 @@ def cloud(request):
         username = cursor.fetchall()
 
 
+
         dc['file_id']=i[0]
         dc['file_name']=i[1]
         dc['file_description']=i[2]
         dc['upload_time']=i[3]
         dc['file_id']=i[0]
+        dc['file_type']=i[-1]
 
 
         dc['owner']=username[0][0]
@@ -158,35 +175,36 @@ def cloud(request):
     userid=cursor.fetchall()[0][0]
 
     cursor.execute(f"select received_files from received where username='{request.user.get_username()}'")
-    print(cursor.fetchall())
+    #print(cursor.fetchall())
 
 
+    files_received=cursor.fetchall()
+    if files_received != [] or files_received is not None:
 
-    if cursor.fetchall() != []:
-        files_received=cursor.fetchall()
         files_received=files_received[0][0].split(',')
 
 
         f_r=[]
         for i in files_received:
-            f_r.append(int(i))
-        print(f_r)
+            if i !='None':
+             f_r.append(int(i))
+        #print(f_r)
         context['files_received']=f_r
 
     cursor.execute(f"select * from cloud where owner='{userid}'")
     owned=cursor.fetchall()
     owned_files=[]
     if owned!=[]:
-        print(owned)
+        #print(owned)
         for i in range(len(owned)):
             owned_files.append(owned[i][0])
-    print(owned_files)
+    #print(owned_files)
     context['owned_files']=owned_files
 
 
 
     requested_file=request.POST.get('collect','')
-    print(requested_file)
+    #print(requested_file)
 
 
 
@@ -195,13 +213,13 @@ def cloud(request):
         requested_file_name=requested_file[0]
         requested_file_description=requested_file[1]
         requested_file_owner=requested_file[2]
-        print(requested_file_name)
+        #print(requested_file_name)
 
         cursor.execute(f"select file_id from cloud where file_name='{requested_file_name}'")
 
 
         file_id=cursor.fetchall()[0][0]
-        print(file_id)
+        #print(file_id)
 
         username = request.user.get_username()
 
@@ -304,18 +322,21 @@ def myfiles(request):
     dc = {}
     # print(files)
     for i in files:
-        # print(i)
+        #print(i[0])
         cursor.execute(f"select username from users where UserID={i[4]}")
         username = cursor.fetchall()
-
+        dc['file_id']=i[0]
         dc['file_name'] = i[1]
         dc['file_description'] = i[2]
         dc['upload_time'] = i[3]
+        dc['file_type']=i[-1]
 
         dc['owner'] = username[0][0]
         # print(i[0])
         # print(dc)
         data[i[0]] = dc
+
+
         dc = {}
 
         # print("\n")
@@ -323,17 +344,56 @@ def myfiles(request):
 
     # print(dc)
     # print(data)
+    print(data)
 
     context = {
         'data': data,
         'table_name':'MY FILES'
     }
 
+    requested_file = request.POST.get('collect', '')
+
+    if requested_file:
+        file=requested_file.split('-')
+
+        def write_file(data, filename):
+            # Convert binary data to proper format and write it on Hard Disk
+            with open(filename, 'wb') as file:
+                file.write(data)
+
+        cursor.execute(f"select file_content from encrypted_files where file_id='{file[-1]}'")
+        a = cursor.fetchall()[0][0]
+        print(file)
+        type = file[1]
+
+        ct = {}
+        ct['type'] = type
+        print(type)
+
+        if type == 'jpg':
+            write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.jpg")
+            # ct={'url':"C:\Users\Gnaneswar\Desktop\Project\documents\document.jpg"}
+            return redirect('document')
+        elif type == 'txt':
+            write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.txt")
+            return redirect('document', context=ct)
+        elif type == 'mp4':
+            write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.mp4")
+            return redirect('document', context=ct)
+        elif type == 'mp3':
+            write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.mp3")
+            return redirect('document', context=ct)
+
+
+
+
+
     return HttpResponse(template.render(context, request))
 
 
 
-
+def document(request):
+    return render(request,'image_files.html')
 def received_files(request):
     context = {
         'table_name': 'RECEIVED FILES'
@@ -392,7 +452,37 @@ def received_files(request):
 
     # print(dc)
     # print(data)
+    requested_file = request.POST.get('collect', '')
 
+    if requested_file:
+        file = requested_file.split('-')
+
+        def write_file(data, filename):
+            # Convert binary data to proper format and write it on Hard Disk
+            with open(filename, 'wb') as file:
+                file.write(data)
+
+        cursor.execute(f"select file_content from encrypted_files where file_id='{file[-1]}'")
+        a = cursor.fetchall()[0][0]
+        #print(file)
+        type = file[1]
+        ct={}
+        ct['type']=type
+        print(type)
+
+        if type == 'jpg':
+            write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.jpg")
+            # ct={'url':"C:\Users\Gnaneswar\Desktop\Project\documents\document.jpg"}
+            return redirect('document',context=ct)
+        elif type == 'txt':
+            write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.txt")
+            return redirect('document',context=ct)
+        elif type == 'mp4':
+            write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.mp4")
+            return HttpResponse("Video")
+        elif type == 'mp3':
+            write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.mp3")
+            return redirect('document',context=ct)
 
 
 
