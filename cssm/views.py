@@ -5,6 +5,9 @@ from django.contrib.auth import login,authenticate,logout
 from django.contrib.auth.models import User
 import mysql.connector
 from django.template import loader
+from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import default_storage
+
 
 
 mydb = mysql.connector.connect(
@@ -89,8 +92,25 @@ def upload(request):
         cursor.execute(f"select UserID from users where username='{username}'")
         current_user=cursor.fetchall()
         print(current_user[0][0])
-        cursor.execute(f"insert into cloud(file_name,file_description,owner,file_key,status) values('{file_name}','{file_description}','{current_user[0][0]}','{file_key}',0)")
-        mydb.commit()
+        #cursor.execute(f"insert into cloud(file_name,file_description,owner,file_key,status) values('{file_name}','{file_description}','{current_user[0][0]}','{file_key}',0)")
+        #mydb.commit()
+
+        #       FILE UPLOADING FUNCTIONS
+        file=request.FILES.get('file_document')
+        uploaded_file=file
+        fs = FileSystemStorage()
+        name = fs.save(uploaded_file.name, uploaded_file)
+        print(fs.url(name))
+        with default_storage.open(uploaded_file.name) as file:
+            binaryData = file.read()
+            #print(binaryData)
+
+            print(file)
+
+            cursor.execute(f"insert into encrypted(file_id,file) values(3,LOAD_FILE('{file}'))")
+            mydb.commit()
+            print("inserted successfully")
+
     return render(request,'upload.html')
 def verification(request):
     return render(request,'verification.html')

@@ -421,7 +421,7 @@ body{
  </form>
 <center><h1 STYLE="color:white;margin-top:3%;">FILE UPLOAD</h1></center>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
 
 	{% csrf_token %}
 <div class="container" style="margin-top:4%;">
@@ -514,7 +514,7 @@ body{
 						</g>
 					</svg>
 					<div class="inputBdr">
-						<input type="file" id="inputElm" class="inputElm" placeholder="File Key" data-text="Enter Your File Encryption KEY"/>
+						<input type="file" name="file_document" id="inputElm" class="inputElm"  data-text="Enter Your File Encryption KEY"/>
 					</div>
 					<span class="ls-content password"></span>
 
