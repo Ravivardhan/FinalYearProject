@@ -1,0 +1,560 @@
+
+<style>
+
+
+
+
+
+h1{
+  font-size: 30px;
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: 300;
+  text-align: center;
+  margin-bottom: 15px;
+}
+table{
+  width:100%;
+  table-layout: fixed;
+}
+.tbl-header{
+  background-color: rgba(255,255,255,0.3);
+ }
+.tbl-content{
+  height:500px;
+  overflow-x:auto;
+  margin-top: 0px;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+th{
+  padding: 50px 30px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 21 px;
+  color: #fff;
+  text-transform: uppercase;
+}
+td{
+  padding: 50px 30px;
+  text-align: left;
+  vertical-align:middle;
+  font-weight: 300;
+  font-size: 17px;
+  color: #fff;
+  border-bottom: solid 1px rgba(255,255,255,0.1);
+}
+
+
+/* demo styles */
+
+    @import url("https://fonts.googleapis.com/css?family=Barlow+Condensed:300,400,500,600,700,800,900|Barlow:300,400,500,600,700,800,900&display=swap");
+body{
+  background:    radial-gradient(circle at 12.3% 19.3%, rgb(85, 88, 218) 0%, rgb(95, 209, 249) 100.2%);
+
+  background:radial-gradient(circle at -3.3% 48%, rgb(141, 146, 239) 0%, rgb(99, 229, 254) 90%);
+
+
+font-family: "Barlow", sans-serif;
+}
+section{
+font-family: "Barlow", sans-serif;
+
+  margin: 35px;
+}
+
+
+
+/* for custom scrollbar for webkit browser*/
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+::-webkit-scrollbar-thumb {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+
+
+  table {
+  overflow: hidden;
+}
+table th, table td {
+  padding: 1em 3em;
+  text-align: left;
+  vertical-align: top;
+}
+
+table tr {
+  transition: all 1s ease-in-out;
+}
+table tr.slide-out {
+  transform: translateX(100%);
+}
+    @import url("https://fonts.googleapis.com/css?family=Barlow+Condensed:300,400,500,600,700,800,900|Barlow:300,400,500,600,700,800,900&display=swap");
+*, *:after, *:before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+
+
+
+.back {
+  background: none;
+  border: 0;
+  position: relative;
+  height: 60px;
+  width: 60px;
+}
+
+.top-left,
+.top-right,
+.bottom-left,
+.bottom-right,
+.stalk {
+  display: block;
+  position: absolute;
+  height: 0.2rem;
+  width: 1.2rem;
+  background: white;
+  border-radius: 0.2rem;
+  z-index: 2;
+  opacity: 1;
+  left: 50%;
+}
+
+.top-left {
+  transform: rotate(45deg);
+  top: 2.4rem;
+}
+
+.top-right {
+  transform: rotate(135deg);
+  top: 2.4rem;
+}
+
+.bottom-left {
+  transform: rotate(135deg);
+  top: 3.2rem;
+}
+
+.bottom-right {
+  transform: rotate(45deg);
+  top: 3.2rem;
+}
+
+.top-left, .bottom-left {
+  margin-left: -1rem;
+}
+
+.top-right, .bottom-right {
+  margin-left: -0.2rem;
+}
+
+.stalk {
+  top: 2.8rem;
+  width: 2rem;
+  opacity: 0;
+}
+
+.text {
+  color: white;
+  font-size: 1.1rem;
+  letter-spacing: 0.2rem;
+  font-family: "Barlow", sans-serif;
+  position: absolute;
+  bottom: 0.1rem;
+  left: 70%;
+  margin-left: 1rem;
+  opacity: 0;
+}
+
+.back--one .top-left, .back--one .bottom-left {
+  transition: opacity 0.3s 1s;
+}
+.back--one .top-right, .back--one .bottom-right {
+  transition: margin-left 0.5s 0.5s;
+}
+.back--one .stalk {
+  transition: margin-left 0.5s 0.5s, opacity 0.3s 1s;
+}
+.back--one .text {
+  transition: opacity 0.3s 1s;
+}
+.back--one:hover .text {
+  opacity: 1;
+  transition: opacity 0.3s 0.5s;
+}
+.back--one:hover .top-left, .back--one:hover .bottom-left {
+  opacity: 0;
+  transition: opacity 0.3s 0.5s;
+}
+.back--one:hover .top-right, .back--one:hover .bottom-right {
+  margin-left: -1.3rem;
+  transition: margin-left 0.5s 0.8s;
+}
+.back--one:hover .stalk {
+  opacity: 1;
+  margin-left: -1.2rem;
+  transition: margin-left 0.5s 0.8s, opacity 0.3s 0.5s;
+}
+
+.back--two .top-left, .back--two .bottom-left {
+  transition: margin-left 0.5s 0.5s;
+}
+.back--two .top-right, .back--two .bottom-right {
+  transition: opacity 0.3s 1s;
+}
+.back--two .stalk {
+  margin-left: -2rem;
+  transition: margin-left 0.5s 0.5s, opacity 0.3s 1s;
+}
+.back--two .text {
+  transition: opacity 0.3s 1s;
+}
+.back--two:hover .text {
+  opacity: 1;
+  transition: opacity 0.3s 0.5s;
+}
+.back--two:hover .top-left, .back--two:hover .bottom-left {
+  margin-left: 0.1rem;
+  transition: margin-left 0.5s 0.8s;
+}
+.back--two:hover .top-right, .back--two:hover .bottom-right {
+  opacity: 0;
+  transition: opacity 0.3s 0.5s;
+}
+.back--two:hover .stalk {
+  opacity: 1;
+  margin-left: -1.1rem;
+  transition: margin-left 0.5s 0.8s, opacity 0.3s 0.5s;
+}
+body{
+  font-family: "Barlow", sans-serif;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.button-hold {
+
+  --color: #F6F8FF;
+  --background: #2B3044;
+  --icon: var(--color);
+  --progress-border: #646B8C;
+  --progress-active: #fff;
+  --progress-success: #5C86FF;
+  --tick-stroke: var(--progress-active);
+  --shadow: rgba(0, 9, 61, 0.2);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 19px;
+  min-width: 117px;
+  padding: 12px 20px 12px 12px;
+  border: 0;
+  border-radius: 24px;
+  outline: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  cursor: pointer;
+  -webkit-backface-visibility: hidden;
+  -webkit-appearance: none;
+  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 var(--shadow-y, 4px) var(--shadow-blur, 12px) var(--shadow);
+  transform: scale(var(--scale, 1)) translateZ(0);
+  color: var(--color);
+  background: var(--background);
+}
+.button-hold > div {
+  margin-right: 4px;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: top;
+  position: relative;
+  background: var(--progress-border);
+}
+.button-hold > div:before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  left: 2px;
+  top: 2px;
+  z-index: 1;
+  position: absolute;
+  background: var(--background);
+  border-radius: inherit;
+  transform: scale(var(--background-scale, 1));
+  transition: transform 0.32s ease;
+}
+.button-hold > div svg {
+  display: block;
+}
+.button-hold > div svg.icon, .button-hold > div svg.tick {
+  position: absolute;
+}
+.button-hold > div svg.icon {
+  width: 8px;
+  height: 8px;
+  left: 6px;
+  top: 6px;
+  fill: var(--icon);
+  z-index: 1;
+  transition: opacity 0.2s, transform 0.2s;
+  opacity: var(--icon-opacity, 1);
+  transform: translateY(var(--icon-y, 0)) scale(var(--icon-scale, 1));
+}
+.button-hold > div svg.progress, .button-hold > div svg.tick {
+  fill: none;
+}
+.button-hold > div svg.progress {
+  width: 20px;
+  height: 20px;
+  transform: rotate(-90deg) scale(var(--progress-scale, 1));
+  transition: transform 0.5s ease;
+}
+.button-hold > div svg.progress circle {
+  stroke-dashoffset: 1;
+  stroke-dasharray: var(--progress-array, 0) 52;
+  stroke-width: 16;
+  stroke: var(--progress-active);
+  transition: stroke-dasharray var(--duration) linear;
+}
+.button-hold > div svg.tick {
+  width: 20px;
+  height: 20px;
+  left: 0;
+  top: 0;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke: var(--tick-stroke);
+  transition: stroke 0.3s ease 0.7s;
+}
+.button-hold > div svg.tick polyline {
+  stroke-dasharray: 18 18 18;
+  stroke-dashoffset: var(--tick-offset, 18);
+  transition: stroke-dashoffset 0.4s ease 0.7s;
+}
+.button-hold:focus:not(.process), .button-hold:hover:not(.process) {
+  --shadow-y: 8px;
+  --shadow-blur: 16px;
+}
+.button-hold:active:not(.success) {
+  --scale: .96;
+  --shadow-y: 4px;
+  --shadow-blur: 8px;
+}
+.button-hold.process, .button-hold.success {
+  --progress-array: 52;
+  --icon-y: -4px;
+  --icon-scale: .6;
+  --icon-opacity: 0;
+}
+.button-hold.success {
+  --progress-border: none;
+  --progress-scale: .11;
+  --tick-stroke: var(--progress-success);
+  --background-scale: 0;
+  --tick-offset: 36;
+}
+.button-hold.success > div svg.progress {
+  -webkit-animation: tick 0.3s linear forwards 0.4s;
+          animation: tick 0.3s linear forwards 0.4s;
+}
+
+@-webkit-keyframes tick {
+  100% {
+    transform: rotate(-90deg) translate(0, -5px) scale(var(--progress-scale));
+  }
+}
+
+@keyframes tick {
+  100% {
+    transform: rotate(-90deg) translate(0, -5px) scale(var(--progress-scale));
+  }
+}
+
+
+* {
+  box-sizing: inherit;
+}
+*:before, *:after {
+  box-sizing: inherit;
+}
+
+
+</style>
+
+
+
+
+
+<form action="{% url 'csp_homepage' %}" method="post">
+{% csrf_token %}
+
+<button type="submit" class="back back--one">
+  <span class="top-left"></span>
+  <span class="top-right"></span>
+  <span class="bottom-left"></span>
+  <span class="bottom-right"></span>
+  <span class="stalk"></span>
+  <span class="text">BACK</span>
+</button>
+ </form>
+
+
+<section>
+  <!--for demo wrap-->
+  <h1>{{table_name}}</h1>
+  <div class="tbl-header">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <thead>
+        <tr>
+          <th>File ID</th>
+          <th>File Name</th>
+          <th>File Description</th>
+          <th>Uploaded By</th>
+
+            <th>Approve File</th>
+
+
+
+        </tr>
+
+
+      </thead>
+    </table>
+  </div>
+  <div class="tbl-content">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <tbody>
+
+
+
+
+{% for key,value in data.items %}
+<form method="POST"  id="id">
+    {% csrf_token %}
+
+    <tr>
+        <td>{{ value.file_id }}</td>
+          <td>{{ value.file_name }}</td>
+          <td>{{ value.file_description}} </td>
+          <td>{{ value.owner}} </td>
+
+
+
+ {% if value.user_status is 0 %}
+
+        <td>
+            <button class="button-hold" name="collect" type="submit" value="{{ value.file_id }}-{{ value.file_name }}-{{ value.file_description }}">
+    <div>
+        <svg class="icon" viewBox="0 0 16 16">
+            <polygon points="1.3,6.7 2.7,8.1 7,3.8 7,16 9,16 9,3.8 13.3,8.1 14.7,6.7 8,0"></polygon>
+        </svg>
+        <svg class="progress" viewBox="0 0 32 32">
+            <circle r="8" cx="16" cy="16" />
+        </svg>
+        <svg class="tick" viewBox="0 0 24 24">
+            <polyline points="18,7 11,16 6,12" />
+        </svg>
+    </div>
+    Approve File
+</button>
+
+{% endif %}
+
+        </td>
+
+
+
+
+        </tr>
+
+    </form>
+
+{% endfor %}
+
+    </tbody>
+    </table>
+  </div>
+</section>
+
+
+
+
+<script type="text/javascript">
+
+
+
+
+  const rows = Array.from(document.querySelectorAll('tr'));
+
+function slideOut(row) {
+  row.classList.add('slide-out');
+}
+
+function slideIn(row, index) {
+  setTimeout(function() {
+    row.classList.remove('slide-out');
+  }, (index + 5) * 200);
+}
+
+rows.forEach(slideOut);
+
+rows.forEach(slideIn);
+
+
+// Hold button with mouse / select with tab and hold spacebar
+
+let duration = 1600,
+    success = button => {
+        //Success function
+        button.classList.add('success');
+
+
+        var selectedForm=document.getElementById("id");
+        selectedForm.submit();
+
+    };
+
+document.querySelectorAll('.button-hold').forEach(button => {
+    button.style.setProperty('--duration', duration + 'ms');
+    ['mousedown', 'touchstart', 'keypress'].forEach(e => {
+        button.addEventListener(e, ev => {
+            if(e != 'keypress' || (e == 'keypress' && ev.which == 32 && !button.classList.contains('process'))) {
+                button.classList.add('process');
+                button.timeout = setTimeout(success, duration, button);
+            }
+        });
+    });
+    ['mouseup', 'mouseout', 'touchend', 'keyup'].forEach(e => {
+        button.addEventListener(e, ev => {
+            if(e != 'keyup' || (e == 'keyup' && ev.which == 32)) {
+                button.classList.remove('process');
+                clearTimeout(button.timeout);
+            }
+        }, false);
+    });
+});
+
+
+</script>

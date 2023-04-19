@@ -89,7 +89,7 @@ def upload(request):
         cursor.execute(f"select UserID from users where username='{username}'")
         current_user=cursor.fetchall()
         print(current_user[0][0])
-        cursor.execute(f"insert into cloud(file_name,file_description,owner,file_key) values('{file_name}','{file_description}','{current_user[0][0]}','{file_key}')")
+        cursor.execute(f"insert into cloud(file_name,file_description,owner,file_key,status) values('{file_name}','{file_description}','{current_user[0][0]}','{file_key}',0)")
         mydb.commit()
     return render(request,'upload.html')
 def verification(request):
@@ -98,7 +98,7 @@ def verification(request):
 def cloud(request):
     template = loader.get_template('table.html')
 
-    cursor.execute("select * from cloud")
+    cursor.execute("select * from cloud where status=1")
     files = cursor.fetchall()
     data={}
     dc={}
@@ -109,6 +109,7 @@ def cloud(request):
         username = cursor.fetchall()
 
 
+        dc['file_id']=i[0]
         dc['file_name']=i[1]
         dc['file_description']=i[2]
         dc['upload_time']=i[3]
@@ -224,7 +225,7 @@ def requests(request):
 
     context = {
         'data': data,
-        'table_name': 'CLOUD'
+        'table_name': 'REQUESTS'
     }
 
     requested_file = request.POST.get('collect', '')
@@ -335,7 +336,8 @@ def received_files(request):
             received_list = files_received[0][1].split(',')
             list_received = []
             for i in received_list:
-                list_received.append(int(i))
+                if i != 'None':
+                    list_received.append(int(i))
 
 
 
