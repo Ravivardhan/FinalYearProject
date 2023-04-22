@@ -1,5 +1,9 @@
 <html lang="en">
 <head>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+          integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+            crossorigin="anonymous"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login page</title>
@@ -470,7 +474,7 @@ h1 {
       </svg>
     </div>
 
-    <form  method="POST" class="form login">
+    <form id="login_form" method="POST" class="form login">
       {% csrf_token %}
       <div class="form__field form__field--email">
         <label class="label label--icon" for="login__email">
@@ -545,6 +549,8 @@ h1 {
     crossorigin="anonymous"></script>
   <script src="./cartoon.js"></script>
 </body>
+
+
 
 <script type="text/javascript">
   

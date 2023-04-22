@@ -171,7 +171,9 @@ def file_requests(request):
         dc['upload_time'] = i[3]
         dc['file_id'] = i[0]
         dc['owner']=uname[0][0]
-        dc['user_status'] = i[-1]
+        dc['user_status'] = i[6]
+
+        print(i[6])
 
         # print(i[0])
         # print(dc)

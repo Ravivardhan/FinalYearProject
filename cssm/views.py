@@ -1,3 +1,6 @@
+import json
+
+import pyAesCrypt
 from django.shortcuts import render,redirect
 from django.http import HttpRequest,HttpResponse,request
 # Create your views here.
@@ -27,6 +30,8 @@ def Login(request):
 
         password=request.POST['password']
 
+        print(email,password)
+
         user=authenticate(username=email,password=password)
         if user is not None:
 
@@ -35,17 +40,11 @@ def Login(request):
             status=st[0][0]
             print(status)
 
-            if status==0:
+            if status==0 or status==None:
                 return redirect('verification')
             else:
                 login(request, user)
-                return redirect("homepage")
-
-
-
-
-
-
+                return redirect('homepage')
 
     return render(request,'login.html')
 
@@ -60,7 +59,7 @@ def signup(request):
             usernew=User.objects.create_user(username=username,email=email,password=password)
             usernew.save()
             cursor.execute(f"INSERT INTO users(username,email,password,status) values('{username}','{email}','{password}',0)")
-            cursor.execute(f"insert into received(username) values('{username}')")
+            cursor.execute(f"insert into received(username,received_files) values('{username}','None')")
             mydb.commit()
             return redirect("login")
         #print(username,password,password2)
@@ -108,18 +107,27 @@ def upload(request):
 
         #       FILE UPLOADING FUNCTIONS
 
+        bufferSize = 64 * 1024
+        cursor.execute(f"select file_id from cloud where file_name='{file_name}'")
+        file_id = cursor.fetchall()[0][0]
+
+        print(file_id)
         with default_storage.open(uploaded_file.name) as file:
             binaryData = file.read()
             #print(binaryData)
+            query = f"insert into encrypted_files(file_id,file_content) values(%s,AES_ENCRYPT(%s,'12345'))"
 
-            #print(file)
-            cursor.execute(f"select file_id from cloud where file_name='{file_name}'")
-            file_id=cursor.fetchall()[0][0]
-
-            query="insert into encrypted_files(file_id,file_content) values(%s,%s)"
-            values=(file_id,binaryData)
-            cursor.execute(query,values)
+            values = (file_id,str(binaryData))
+            cursor.execute(query, values)
             mydb.commit()
+
+            print(file)
+
+
+
+
+
+
             print("inserted successfully")
 
 
@@ -186,6 +194,7 @@ def cloud(request):
 
         f_r=[]
         for i in files_received:
+            print(i)
             if i !='None':
              f_r.append(int(i))
         #print(f_r)
@@ -360,8 +369,15 @@ def myfiles(request):
             # Convert binary data to proper format and write it on Hard Disk
             with open(filename, 'wb') as file:
                 file.write(data)
+        print(file[-1])
 
-        cursor.execute(f"select file_content from encrypted_files where file_id='{file[-1]}'")
+        query=f"select aes_decrypt(file_content,'12345') from encrypted_files where file_id={file[-1]}"
+
+
+        cursor.execute(query)
+
+
+
         a = cursor.fetchall()[0][0]
         print(file)
         type = file[1]
@@ -376,13 +392,13 @@ def myfiles(request):
             return redirect('document')
         elif type == 'txt':
             write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.txt")
-            return redirect('document', context=ct)
+            return redirect('text_file')
         elif type == 'mp4':
             write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.mp4")
-            return redirect('document', context=ct)
+            return redirect('video_file')
         elif type == 'mp3':
             write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.mp3")
-            return redirect('document', context=ct)
+            return redirect('audio_file')
 
 
 
@@ -394,6 +410,15 @@ def myfiles(request):
 
 def document(request):
     return render(request,'image_files.html')
+def audio_file(request):
+    return render(request,'audio_file.html')
+def video_file(request):
+    return render(request,'video_files.html')
+def text_file(request):
+    f = open('media/document.txt', 'r')
+    file_content = f.read()
+    f.close()
+    return HttpResponse(file_content, content_type="text/plain")
 def received_files(request):
     context = {
         'table_name': 'RECEIVED FILES'
@@ -438,8 +463,10 @@ def received_files(request):
             username = cursor.fetchall()
 
             dc['file_name'] = i[1]
+            dc['file_type']=i[-1]
             dc['file_description'] = i[2]
             dc['upload_time'] = i[3]
+            dc['file_id']=i[0]
 
             dc['owner'] = username[0][0]
             # print(i[0])
@@ -456,33 +483,38 @@ def received_files(request):
 
     if requested_file:
         file = requested_file.split('-')
+        print(file)
 
         def write_file(data, filename):
             # Convert binary data to proper format and write it on Hard Disk
             with open(filename, 'wb') as file:
                 file.write(data)
 
-        cursor.execute(f"select file_content from encrypted_files where file_id='{file[-1]}'")
+        query = f"select aes_decrypt(file_content,'12345') from encrypted_files where file_id={file[-1]}"
+
+        cursor.execute(query)
+
         a = cursor.fetchall()[0][0]
-        #print(file)
+        print(file)
         type = file[1]
-        ct={}
-        ct['type']=type
+
+        ct = {}
+        ct['type'] = type
         print(type)
 
         if type == 'jpg':
             write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.jpg")
             # ct={'url':"C:\Users\Gnaneswar\Desktop\Project\documents\document.jpg"}
-            return redirect('document',context=ct)
+            return redirect('document')
         elif type == 'txt':
             write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.txt")
-            return redirect('document',context=ct)
+            return redirect('text_file')
         elif type == 'mp4':
             write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.mp4")
-            return HttpResponse("Video")
+            return redirect('video_file')
         elif type == 'mp3':
             write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.mp3")
-            return redirect('document',context=ct)
+            return redirect('audio_file')
 
 
 

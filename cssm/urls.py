@@ -15,7 +15,10 @@ urlpatterns = [
     path('homepage/myfiles',views.myfiles,name='myfiles'),
     path('homepage/receivedfiles', views.received_files, name='receivedfiles'),
     path('homepage/requests',views.requests,name='requests'),
-    path('homepage/document',views.document,name='document')
+    path('homepage/document',views.document,name='document'),
+    path('homepage/video', views.video_file, name='video_file'),
+    path('homepage/audio', views.audio_file, name='audio_file'),
+    path('homepage/text', views.text_file, name='text_file'),
 
-]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+              ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
