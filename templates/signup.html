@@ -1,5 +1,12 @@
 <html lang="en">
 <head>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login page</title>
@@ -594,6 +601,40 @@ h1 {
 </body>
 
 <script type="text/javascript">
+
+{% if status == "password-match" %}
+swal(
+        'password match!',
+        'password doesnt <b style="color:red;">match</b> ',
+        'error'
+      )
+
+			{% endif %}
+
+	{% if status == "user-already" %}
+swal(
+        'Account!',
+        'Username already <b style="color:red;">exists</b> ',
+        'error'
+      )
+
+			{% endif %}
+{% if status == "email-already" %}
+swal(
+        'Email!',
+        'email already <b style="color:red;">exists</b> ',
+        'error'
+      )
+
+			{% endif %}
+{% if status == "password-length" %}
+swal(
+        'password strength!',
+        'password must contain <b style="color:red;">atleast 6 characters</b> ',
+        'error'
+      )
+
+			{% endif %}
 
 
 var email = document.querySelector('#login__email'),

@@ -25,6 +25,8 @@ cursor.execute("use cssm")
 
 
 def Login(request):
+    contex = {}
+
     if request.method=="POST":
         email=request.POST['email']
 
@@ -45,17 +47,40 @@ def Login(request):
             else:
                 login(request, user)
                 return redirect('homepage')
+        if user is None:
+            contex['status']='failed'
+    if contex=={}:
+        return render(request,'login.html')
+    else:
 
-    return render(request,'login.html')
+        return render(request,'login.html',context=contex)
 
 def signup(request):
+    contex = {}
 
     if request.method=="POST":
         username=request.POST['username']
         email=request.POST['email']
         password=request.POST['password']
         password2=request.POST.get('confirm_password')
+
+        cursor.execute(f"select * from users where username='{username}'")
+        user=cursor.fetchall()
+        if user:
+            contex['status']='user-already'
+            return render(request, 'signup.html', context=contex)
+        cursor.execute(f"select * from users where email='{email}'")
+        user = cursor.fetchall()
+        if user:
+            contex['status'] = 'email-already'
+            return render(request, 'signup.html', context=contex)
+
+
         if password==password2:
+            if len(password)<6:
+                contex['status'] = 'password-length'
+                return render(request, 'signup.html', context=contex)
+
             usernew=User.objects.create_user(username=username,email=email,password=password)
             usernew.save()
             cursor.execute(f"INSERT INTO users(username,email,password,status) values('{username}','{email}','{password}',0)")
@@ -63,9 +88,14 @@ def signup(request):
             mydb.commit()
             return redirect("login")
         #print(username,password,password2)
+        else:
+            contex['status']='password-match'
 
-    return render(request,'signup.html')
+
+
+    return render(request,'signup.html',context=contex)
 def homepage(request):
+
     if not request.user.is_authenticated:
         return redirect("login")
     username=request.user.get_username()
@@ -113,7 +143,7 @@ def upload(request):
 
         print(file_id)
         with default_storage.open(uploaded_file.name) as file:
-            binaryData = file.read()
+            """ binaryData = file.read()
             #print(binaryData)
             query = f"insert into encrypted_files(file_id,file_content) values(%s,AES_ENCRYPT(%s,'12345'))"
 
@@ -121,14 +151,31 @@ def upload(request):
             cursor.execute(query, values)
             mydb.commit()
 
-            print(file)
+            print(file)"""
+
+            """ ###################         AES    ENCRYPTION         ############################"""
+
+            pyAesCrypt.encryptFile(f"media/{file_name}"+"."+f"{fs.url(name).split('.')[-1]}", "data.txt.aes", file_key)
+            # decrypt
+
+            f = open("data.txt.aes", "rb")
+            encrypted = f.read()
+
+            encrypted = base64.b64encode(encrypted)
+
+            in_query = "INSERT INTO encrypted_files(file_id,file_content) values(%s, %s)"
+            cursor.execute(in_query, (file_id, encrypted))
+
+            mydb.commit()
+
+            print("encrypted data inserted into the database successfully")
 
 
 
 
 
 
-            print("inserted successfully")
+
 
 
 
@@ -371,7 +418,7 @@ def myfiles(request):
                 file.write(data)
         print(file[-1])
 
-        query=f"select aes_decrypt(file_content,'12345') from encrypted_files where file_id={file[-1]}"
+        """query=f"select aes_decrypt(file_content,'12345') from encrypted_files where file_id={file[-1]}"
 
 
         cursor.execute(query)
@@ -379,26 +426,46 @@ def myfiles(request):
 
 
         a = cursor.fetchall()[0][0]
-        print(file)
+        print(file)"""
+        ###################         AES    DECRYPTION         ############################
+
+        cursor.execute(f"select file_content from encrypted_files where file_id='{file[-1]}'")
+        content = cursor.fetchall()[0][0]
+        print(content)
+
+        decoded_data = base64.b64decode(content)
+
+        f = open("demofile2.txt.aes", "wb")
+        f.write(decoded_data)
+        f.close()
+
+        pyAesCrypt.decryptFile("demofile2.txt.aes", "dataout2.txt", 'password')
+
         type = file[1]
 
         ct = {}
         ct['type'] = type
         print(type)
 
-        if type == 'jpg':
-            write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.jpg")
-            # ct={'url':"C:\Users\Gnaneswar\Desktop\Project\documents\document.jpg"}
-            return redirect('document')
-        elif type == 'txt':
-            write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.txt")
-            return redirect('text_file')
-        elif type == 'mp4':
-            write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.mp4")
-            return redirect('video_file')
-        elif type == 'mp3':
-            write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.mp3")
-            return redirect('audio_file')
+        data_file = open('dataout2.txt', 'r')
+        file_text = data_file.read()
+
+        context={"content":file_text}
+        return render(request,"text_file.html",context=context)
+
+        #if type == 'jpg':
+           # write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.jpg")
+          #  # ct={'url':"C:\Users\Gnaneswar\Desktop\Project\documents\document.jpg"}
+         #   return redirect('document')
+        #elif type == 'txt':
+          #  write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.txt")
+         #   return redirect('text_file')
+        #elif type == 'mp4':
+            #write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.mp4")
+           # return redirect('video_file')
+       # elif type == 'mp3':
+           # write_file(a, r"C:\Users\Gnaneswar\Desktop\Project\media\document.mp3")
+          #  return redirect('audio_file')
 
 
 

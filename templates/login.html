@@ -1,5 +1,10 @@
 <html lang="en">
 <head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+
 
     <script src="https://code.jquery.com/jquery-3.5.1.js"
           integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
@@ -553,7 +558,24 @@ h1 {
 
 
 <script type="text/javascript">
-  
+{% if status == 'success' %}
+
+	swal(
+				'Success',
+				'Your Account successfully <b style="color:green;">Created</b> ',
+				'success'
+			)
+  {% endif %}
+  {% if status == 'failed' %}
+  swal(
+        "User Doesn't exist!",
+        'Invalid <b style="color:red;">Username/Password</b> ',
+        'error'
+      )
+      {% endif %}
+
+
+
 
 var email = document.querySelector('#login__email'),
     password = document.querySelector('#login__password'),
